@@ -46,18 +46,7 @@
 		_photoImageView = [[IDMTapDetectingImageView alloc] initWithFrame:CGRectZero];
 		_photoImageView.tapDelegate = self;
 		_photoImageView.backgroundColor = [UIColor clearColor];
-        if (@available(iOS 11.0, *)) {
-            _photoImageView.accessibilityIgnoresInvertColors = YES;
-        } else {
-            // Fallback on earlier versions
-        }
 		[self addSubview:_photoImageView];
-        
-        //Add darg&drop in iOS 11
-        if (@available(iOS 11.0, *)) {
-            UIDragInteraction *drag = [[UIDragInteraction alloc] initWithDelegate: self];
-            [_photoImageView addInteraction:drag];
-        }
         
         CGRect screenBound = [[UIScreen mainScreen] bounds];
         CGFloat screenWidth = screenBound.size.width;
@@ -102,12 +91,6 @@
     self.photo = nil;
     [_captionView removeFromSuperview];
     self.captionView = nil;
-}
-
-#pragma mark - Drag & Drop
-
-- (NSArray<UIDragItem *> *)dragInteraction:(UIDragInteraction *)interaction itemsForBeginningSession:(id<UIDragSession>)session NS_AVAILABLE_IOS(11.0) {
-    return @[[[UIDragItem alloc] initWithItemProvider:[[NSItemProvider alloc] initWithObject:_photoImageView.image]]];
 }
 
 #pragma mark - Image
@@ -215,15 +198,12 @@
     // on high resolution screens we have double the pixel density, so we will be seeing every pixel if we limit the
     // maximum zoom scale to 0.5.
 	if ([UIScreen instancesRespondToSelector:@selector(scale)]) {
-        maxDoubleTapZoomScale = maxDoubleTapZoomScale / [[UIScreen mainScreen] scale];
-        
-        if (maxDoubleTapZoomScale < minScale) {
-            maxDoubleTapZoomScale = minScale * 2;
+		maxDoubleTapZoomScale = maxDoubleTapZoomScale / [[UIScreen mainScreen] scale];
+
+	if (maxDoubleTapZoomScale < minScale) {
+		maxDoubleTapZoomScale = minScale * 2;
         }
     }
-    
-    // Make sure maxDoubleTapZoomScale isn't larger than maxScale
-    maxDoubleTapZoomScale = MIN(maxDoubleTapZoomScale, maxScale);
     
 	// Set
 	self.maximumZoomScale = maxScale;
